@@ -1,8 +1,8 @@
 find_package(OpenVINO REQUIRED COMPONENTS Runtime Threading)
 find_package(OpenCL REQUIRED)
 
-file(GLOB_RECURSE GGML_HEADERS_OPENVINO "*.h" "*.hpp")
-file(GLOB_RECURSE GGML_SOURCES_OPENVINO "*.cpp")
+file(GLOB_RECURSE GGML_HEADERS_OPENVINO CONFIGURE_DEPENDS "*.h" "*.hpp")
+file(GLOB_RECURSE GGML_SOURCES_OPENVINO CONFIGURE_DEPENDS "*.cpp")
 
 ggml_add_backend_library(ggml-openvino
     ${GGML_SOURCES_OPENVINO}
