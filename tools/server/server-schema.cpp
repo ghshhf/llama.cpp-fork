@@ -79,6 +79,10 @@ std::vector<std::unique_ptr<field>> make_llama_cmpl_schema(const common_params &
         ->set_desc("A list of response fields to return. Missing fields are omitted without error. Fields with a slash are unnested (e.g. generation_settings/n_predict moves n_predict to the root)")
         ->set_handler([&](field_eval_context & ctx, const json & data) {
             ctx.params.response_fields = json_value(data, "response_fields", std::vector<std::string>());
+            // support "requested_fields" as an alias for "response_fields"
+            if (!data.contains("response_fields") && data.contains("requested_fields")) {
+                ctx.params.response_fields = json_value(data, "requested_fields", std::vector<std::string>());
+            }
         }));
 
 
