@@ -1,0 +1,56 @@
+name: Auto-sync with upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/ggml-org/llama.cpp.git
+
+      - name: Fetch upstream
+        run: git fetch upstream
+
+      - name: Rebase onto upstream master
+        id: rebase
+        run: |
+          UPSTREAM_COMMIT=$(git rev-parse upstream/master)
+          echo "upstream_commit=$UPSTREAM_COMMIT" >> $GITHUB_OUTPUT
+
+          CUSTOM_COMMITS=$(git rev-list --count HEAD..upstream/master)
+          echo "commits_behind=$CUSTOM_COMMITS" >> $GITHUB_OUTPUT
+
+          if [ "$CUSTOM_COMMITS" -eq 0 ]; then
+            echo "Already up to date with upstream"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Behind upstream by $CUSTOM_COMMITS commits, rebasing..."
+            echo "changed=true" >> $GITHUB_OUTPUT
+            git rebase upstream/master
+          fi
+
+      - name: Push rebased commits
+        if: steps.rebase.outputs.changed == 'true'
+        run: git push origin master --force-with-lease
+
+      - name: Notify on sync
+        if: steps.rebase.outputs.changed == 'true'
+        run: |
+          echo "✅ Synced ${{ steps.rebase.outputs.commits_behind }} commits from upstream"
+          echo "Upstream commit: ${{ steps.rebase.outputs.upstream_commit }}"
