@@ -7,6 +7,10 @@
 [![Server](https://github.com/ggml-org/llama.cpp/actions/workflows/server.yml/badge.svg)](https://github.com/ggml-org/llama.cpp/actions/workflows/server.yml)
 [![Docker](https://github.com/ggml-org/llama.cpp/actions/workflows/docker.yml/badge.svg)](https://github.com/ggml-org/llama.cpp/actions/workflows/docker.yml)
 [![Winget](https://github.com/ggml-org/llama.cpp/actions/workflows/winget.yml/badge.svg)](https://github.com/ggml-org/llama.cpp/actions/workflows/winget.yml)
+[![Auto-Sync](https://github.com/ghshhf/llama.cpp-fork/actions/workflows/sync-upstream.yml/badge.svg)](https://github.com/ghshhf/llama.cpp-fork/actions/workflows/sync-upstream.yml)
+[![clang-tidy](https://github.com/ghshhf/llama.cpp-fork/actions/workflows/clang-tidy.yml/badge.svg)](https://github.com/ghshhf/llama.cpp-fork/actions/workflows/clang-tidy.yml)
+[![Pre-commit](https://github.com/ghshhf/llama.cpp-fork/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/ghshhf/llama.cpp-fork/actions/workflows/pre-commit.yml)
+[![Python Lint](https://github.com/ghshhf/llama.cpp-fork/actions/workflows/python-lint.yml/badge.svg)](https://github.com/ghshhf/llama.cpp-fork/actions/workflows/python-lint.yml)
 
 [Manifesto](https://github.com/ggml-org/llama.cpp/discussions/205) / [ggml](https://github.com/ggml-org/ggml) / [ops](docs/ops.md)
 
