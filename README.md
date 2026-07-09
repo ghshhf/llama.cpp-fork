@@ -11,6 +11,17 @@
 [Manifesto](https://github.com/ggml-org/llama.cpp/discussions/205) / [ggml](https://github.com/ggml-org/ggml) / [ops](docs/ops.md)
 
 LLM inference in C/C++
+> **This fork is the upstream-first edition of [llama.cpp](https://github.com/ggml-org/llama.cpp) — rebased nightly onto the latest upstream, with code quality checks, expanded documentation, and a modular model conversion framework.**
+>
+> - 🔄 **Auto-synced** with upstream every day via CI
+> - 📚 **9 tutorials** for embeddings, KV-cache reuse, agentic coding, and more
+> - 🔧 **Code quality tooling** — `clang-tidy`, `clang-format`, `flake8`, `pre-commit` hooks
+> - 🔒 **Security hardening** — `weights_only=True` in all `torch.load()` calls
+> - 🏗️ **Modular conversion framework** — 40+ model modules replacing the monolithic converter
+> - 📦 **11 Dockerfiles** for CUDA, Vulkan, ROCm, OpenVINO, CANN, MUSA, and more
+>
+> See [conversion/README.md](conversion/README.md) for the model conversion framework. See [docs/tutorials/](docs/tutorials/) for guides.
+
 
 ## Recent API changes
 
