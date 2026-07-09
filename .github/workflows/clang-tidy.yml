@@ -25,16 +25,54 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y clang-tidy libclang-dev
 
-      - name: Run clang-tidy
+      - name: Run clang-tidy on modified C/C++ files
         run: |
-          # Find all C/C++ source files
-          find ggml/src -name '*.cpp' -o -name '*.c' > files.txt
-          find src -name '*.cpp' -o -name '*.c' >> files.txt
-          find common -name '*.cpp' -o -name '*.c' >> files.txt
+          CHANGED_FILES=$(git diff --name-only origin/master HEAD -- '*.cpp' '*.c' '*.h' || true)
 
-          # Run clang-tidy on each file (compile_commands.json would be needed for full analysis)
-          # This is a baseline check that validates the configured checks are valid
-          clang-tidy --checks='$CHECKS' --list-checks 2>&1 | head -5
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No C/C++ files changed, skipping clang-tidy"
+            exit 0
+          fi
 
-          echo "clang-tidy configuration validated successfully"
-          echo "Checks enabled: bugprone-*, readability-*, clang-analyzer-*, performance-*, portability-*, misc-*"
+          echo "Files to check:"
+          echo "$CHANGED_FILES"
+
+          # Generate compile_commands.json if not present
+          if [ ! -f compile_commands.json ]; then
+            cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_SHARED_LIBS=ON -DGGML_CPU_ALL_VARIANTS=ON -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_SERVER=OFF
+            cp build/compile_commands.json .
+          fi
+
+          # Run clang-tidy with checks focused on real code quality issues
+          # Note: excludes readability-* (too noisy for upstream code),
+          #       excludes bugprone-reserved-identifier (platform-specific macros)
+          TOTAL=0
+          PASS=0
+          FAIL=0
+
+          for file in $CHANGED_FILES; do
+            if [ -f "$file" ]; then
+              OUTPUT=$(clang-tidy \
+                --checks='bugprone-*,security-*,performance-*,misc-*' \
+                -p build "$file" 2>&1) || true
+
+              # Filter out known platform-specific false positives
+              FILTERED=$(echo "$OUTPUT" | grep -v "reserved-identifier" | grep -v "pragma once" | grep -v "diagnostic-error" || true)
+
+              if [ -n "$FILTERED" ]; then
+                echo "::warning file=$file::clang-tidy found issues"
+                echo "$FILTERED"
+                TOTAL=$((TOTAL + 1))
+              else
+                PASS=$((PASS + 1))
+              fi
+            fi
+          done
+
+          echo "::notice title=clang-tidy Summary::Checked files: $((PASS + TOTAL)), Clean: $PASS, With issues: $TOTAL"
+
+          # Fail only if there are unfiltered issues
+          if [ "$TOTAL" -gt 0 ]; then
+            echo "::error::clang-tidy found issues in $TOTAL files"
+            exit 1
+          fi
