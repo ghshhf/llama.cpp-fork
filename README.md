@@ -24,7 +24,7 @@ LLM inference in C/C++
 > - 🏗️ **Modular conversion framework** — 40+ model modules replacing the monolithic converter
 > - 📦 **11 Dockerfiles** for CUDA, Vulkan, ROCm, OpenVINO, CANN, MUSA, and more
 >
-> See [conversion/README.md](conversion/README.md) for the model conversion framework. See [docs/tutorials/](docs/tutorials/) for guides.
+> See [conversion/README.md](conversion/README.md) for the model conversion framework. See [docs/tutorials/](docs/tutorials/) for guides. See [project website](https://ghshhf.github.io/llama.cpp-fork) for a full overview.
 
 
 ## Recent API changes
