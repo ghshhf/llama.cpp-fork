@@ -1,3 +1,31 @@
+# Contributing to llama.cpp-fork (fork-specific notes)
+
+This fork is maintained independently — we pull useful changes from upstream as needed, and we welcome community help on the issues we've flagged.
+
+## How to claim work
+1. Look for an open issue labeled `good-first-issue`, or comment on any issue asking to be assigned.
+2. **Wait for a maintainer to assign it to you** before you start coding.
+3. Take **one issue at a time** — finish and get it merged before picking up another.
+
+## Before you open a PR
+- Fork the repo and branch off `master` (e.g. `fix/issue-8-readme-badges`).
+- Make sure it **builds** and **tests pass** locally.
+- Keep PRs small and focused on a single issue — big PRs are harder to review.
+
+## Opening the PR
+- Fill in the PR template and **link the issue** it closes.
+- CI must be green before a maintainer reviews.
+- We may ask for changes — that's normal and expected.
+
+## A few notes
+- AI-assisted contributions are welcome, but the code must be correct and you should understand what it does.
+- Every PR is reviewed; not all are merged. We optimize for quality over speed.
+- Be responsive on the issue/PR if we leave feedback.
+
+---
+
+# Upstream llama.cpp contribution guide (preserved)
+
 # Contributing to llama.cpp-fork
 
 Thank you for your interest in contributing! This fork focuses on **code quality, documentation, and build-system improvements** on top of the latest upstream [llama.cpp](https://github.com/ggml-org/llama.cpp).
