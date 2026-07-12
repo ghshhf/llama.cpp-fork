@@ -58,6 +58,39 @@ python convert_hf_to_gguf.py google/gemma-3-1b-it
 python convert_hf_to_gguf.py deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
 ```
 
+## Model-Specific Notes
+
+### Phi-4 (`phi.py`)
+
+Phi-4 (`microsoft/phi-4`) reuses the `Phi3ForCausalLM` HF architecture and is
+converted by `Phi3MiniModel`, the same class used for earlier Phi-3 models.
+A few things differ from those earlier models and are handled specially:
+
+- **Tokenizer.** Phi-4 ships a `GPT2Tokenizer` (a tiktoken-style BPE vocab)
+  instead of the SentencePiece tokenizer used by prior Phi-3 checkpoints.
+  `Phi3MiniModel.set_vocab()` reads `tokenizer_class` out of
+  `tokenizer_config.json` and dispatches to `_set_vocab_gpt2()` when it's
+  `"GPT2Tokenizer"`, falling back to the legacy `tokenizer.model`
+  SentencePiece loader otherwise. See
+  [ggml-org/llama.cpp#10814](https://github.com/ggml-org/llama.cpp/issues/10814)
+  for the original report.
+- **Sliding window.** Phi-4's `config.json` sets `sliding_window: null`
+  (full attention, default context 16384). `set_gguf_parameters()` writes
+  a sliding window of `0` in that case, which is also how the converter
+  distinguishes Phi-4 from earlier sliding-window Phi-3 variants.
+- **RoPE.** Phi-4 does not use long/short RoPE factor scaling
+  (`rope_scaling: null`, `rope_theta: 250000`), so
+  `generate_extra_tensors()` is a no-op for it. The same converter also
+  supports long-context Phi-3 models (e.g. `Phi-3-medium-128k-instruct`)
+  whose `rope_scaling` provides `long_factor`/`short_factor` arrays
+  (`"longrope"`/`"su"` or `"yarn"` types); these are written as
+  `rope_factors_long`/`rope_factors_short` tensors.
+- **Phi-4 multimodal.** The Phi-4 multimodal vision tower uses a separate
+  architecture string, `Phi4ForCausalLMV`, which is registered on *both*
+  `Phi3MiniModel` (its text backbone) and `Phi4VisionMmprojModel` (its
+  vision projector, exported with `--mmproj`). These don't collide because
+  `ModelBase` keys registrations by text vs. mmproj model type.
+
 ## Extending the Framework
 
 To add support for a new model family:
