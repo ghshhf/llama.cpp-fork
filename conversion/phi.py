@@ -35,6 +35,13 @@ class Phi2Model(TextModel):
         self.gguf_writer.add_add_bos_token(False)
 
 
+# NOTE: "Phi4ForCausalLMV" is registered both here (as the TEXT backbone of
+# a Phi-4 multimodal checkpoint) and below on Phi4VisionMmprojModel (as its
+# MMPROJ vision tower). This is not a conflict: ModelBase.register() keys
+# registrations by ModelType (TEXT vs MMPROJ), which is derived from each
+# class's model_arch, so the same HF `architectures` string can resolve to
+# either converter depending on which one convert_hf_to_gguf.py is asked
+# to build (see ModelBase.from_model_architecture).
 @ModelBase.register("Phi3ForCausalLM", "Phi4ForCausalLMV")
 class Phi3MiniModel(TextModel):
     model_arch = gguf.MODEL_ARCH.PHI3
